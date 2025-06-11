@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Analyzer - Professional Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .operation-selector {
+            margin-bottom: 30px;
+        }
+        
+        .operation-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .operation-btn {
+            padding: 15px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: 600;
+        }
+        
+        .operation-btn:hover, .operation-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .input-section.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .result-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .plot-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .plot-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .properties-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .properties-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .properties-table th, .properties-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .properties-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #c33;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: #667eea;
+        }
+        
+        .example-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔢 Line Analyzer Pro</h1>
+            <p>Professional Straight Line Analysis Tool</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="operation-selector">
+                <h2>Select Operation</h2>
+                <div class="operation-buttons">
+                    <button class="operation-btn" onclick="selectOperation('point_line_distance')">
+                        📍 Point to Line Distance
+                    </button>
+                    <button class="operation-btn" onclick="selectOperation('line_line_distance')">
+                        📏 Line to Line Analysis
+                    </button>
+                    <button class="operation-btn" onclick="selectOperation('point_point_distance')">
+                        📐 Point to Point Distance
+                    </button>
+                    <button class="operation-btn" onclick="selectOperation('line_properties')">
+                        📊 Line Properties
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Point to Line Distance -->
+            <div id="point_line_distance" class="input-section">
+                <h3>Calculate Distance from Point to Line</h3>
+                <div class="input-group">
+                    <label>Line Equation:</label>
+                    <input type="text" id="equation1" placeholder="e.g., 2*x + 3*y - 6 = 0 or y = 2*x + 1">
+                    <div class="example-text">Examples: "2*x + 3*y - 6 = 0", "y = 2*x + 1", "x - 2*y + 4 = 0"</div>
+                </div>
+                <div class="input-group">
+                    <label>Point X-coordinate:</label>
+                    <input type="number" id="point_x" placeholder="e.g., 1" step="any">
+                </div>
+                <div class="input-group">
+                    <label>Point Y-coordinate:</label>
+                    <input type="number" id="point_y" placeholder="e.g., 2" step="any">
+                </div>
+                <button class="calculate-btn" onclick="calculate()">Calculate Distance</button>
+            </div>
+            
+            <!-- Line to Line Analysis -->
+            <div id="line_line_distance" class="input-section">
+                <h3>Analyze Two Lines</h3>
+                <div class="input-group">
+                    <label>First Line Equation:</label>
+                    <input type="text" id="equation2_1" placeholder="e.g., 2*x + 3*y - 6 = 0">
+                </div>
+                <div class="input-group">
+                    <label>Second Line Equation:</label>
+                    <input type="text" id="equation2_2" placeholder="e.g., 4*x + 6*y + 5 = 0">
+                </div>
+                <button class="calculate-btn" onclick="calculate()">Analyze Lines</button>
+            </div>
+            
+            <!-- Point to Point Distance -->
+            <div id="point_point_distance" class="input-section">
+                <h3>Calculate Distance Between Two Points</h3>
+                <div class="input-group">
+                    <label>First Point X-coordinate:</label>
+                    <input type="number" id="x1" placeholder="e.g., 1" step="any">
+                </div>
+                <div class="input-group">
+                    <label>First Point Y-coordinate:</label>
+                    <input type="number" id="y1" placeholder="e.g., 2" step="any">
+                </div>
+                <div class="input-group">
+                    <label>Second Point X-coordinate:</label>
+                    <input type="number" id="x2" placeholder="e.g., 4" step="any">
+                </div>
+                <div class="input-group">
+                    <label>Second Point Y-coordinate:</label>
+                    <input type="number" id="y2" placeholder="e.g., 6" step="any">
+                </div>
+                <button class="calculate-btn" onclick="calculate()">Calculate Distance</button>
+            </div>
+            
+            <!-- Line Properties -->
+            <div id="line_properties" class="input-section">
+                <h3>Analyze Line Properties</h3>
+                <div class="input-group">
+                    <label>Line Equation:</label>
+                    <input type="text" id="equation3" placeholder="e.g., 2*x + 3*y - 6 = 0">
+                    <div class="example-text">Enter any line equation to see its complete analysis</div>
+                </div>
+                <button class="calculate-btn" onclick="calculate()">Analyze Line</button>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="results" class="result-section">
+                <div id="loading" class="loading" style="display: none;">
+                    Calculating... Please wait
+                </div>
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOperation = null;
+
+        function selectOperation(operation) {
+            // Remove active class from all buttons and sections
+            document.querySelectorAll('.operation-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.input-section').forEach(section => section.classList.remove('active'));
+            document.getElementById('results').classList.remove('show');
+            
+            // Add active class to selected button and section
+            event.target.classList.add('active');
+            document.getElementById(operation).classList.add('active');
+            
+            currentOperation = operation;
+        }
+
+        function calculate() {
+            if (!currentOperation) {
+                alert('Please select an operation first');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const resultContent = document.getElementById('result-content');
+            
+            loading.style.display = 'block';
+            results.classList.add('show');
+            resultContent.innerHTML = '';
+
+            let data = { operation: currentOperation };
+
+            // Collect input data based on operation
+            if (currentOperation === 'point_line_distance') {
+                data.equation = document.getElementById('equation1').value;
+                data.point_x = document.getElementById('point_x').value;
+                data.point_y = document.getElementById('point_y').value;
+            } else if (currentOperation === 'line_line_distance') {
+                data.equation1 = document.getElementById('equation2_1').value;
+                data.equation2 = document.getElementById('equation2_2').value;
+            } else if (currentOperation === 'point_point_distance') {
+                data.x1 = document.getElementById('x1').value;
+                data.y1 = document.getElementById('y1').value;
+                data.x2 = document.getElementById('x2').value;
+                data.y2 = document.getElementById('y2').value;
+            } else if (currentOperation === 'line_properties') {
+                data.equation = document.getElementById('equation3').value;
+            }
+
+            // Send request to Flask backend
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.success) {
+                    let html = `<div class="result-text">${data.result}</div>`;
+                    
+                    if (data.plot) {
+                        html += `<div class="plot-container">
+                            <img src="data:image/png;base64,${data.plot}" alt="Analysis Plot">
+                        </div>`;
+                    }
+                    
+                    if (data.details || data.properties) {
+                        const props = data.details || data.properties;
+                        html += `<div class="properties-table">
+                            <table>
+                                <thead>
+                                    <tr><th>Property</th><th>Value</th></tr>
+                                </thead>
+                                <tbody>`;
+                        
+                        for (const [key, value] of Object.entries(props)) {
+                            html += `<tr><td>${key.replace('_', ' ').toUpperCase()}</td><td>${value}</td></tr>`;
+                        }
+                        
+                        html += `</tbody></table></div>`;
+                    }
+                    
+                    if (data.parallel !== undefined) {
+                        html += `<div class="properties-table">
+                            <table>
+                                <thead>
+                                    <tr><th>Relationship</th><th>Status</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>PARALLEL</td><td>${data.parallel ? 'YES' : 'NO'}</td></tr>
+                                    <tr><td>PERPENDICULAR</td><td>${data.perpendicular ? 'YES' : 'NO'}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>`;
+                    }
+                    
+                    resultContent.innerHTML = html;
+                } else {
+                    resultContent.innerHTML = `<div class="error-message">Error: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                resultContent.innerHTML = `<div class="error-message">Network error: ${error.message}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
